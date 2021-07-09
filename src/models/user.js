@@ -3,9 +3,16 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 const User = new Schema({
-    name: { type: String },
-    image: { type: String },
-    countInStock: { type: Number, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    passwordHash: { type: String, required: true },
+    phone: { type: String, required: true },
+    isAdmin: { type: Boolean, required: true },
+    street: { type: String, default: '' },
+    apartment: { type: String, default: '' },
+    zip: { type: String, default: '' },
+    city: { type: String, default: '' },
+    country: { type: String, default: '' },
 })
 
 // create field id base on _id with value = _id value
