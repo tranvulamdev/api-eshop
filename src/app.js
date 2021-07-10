@@ -6,6 +6,7 @@ require('dotenv').config()
 const morgan = require('morgan')
 const db = require('./config/db')
 const cors = require('cors')
+const authJwt = require('./helpers/jwt')
 
 // ENV
 const connectionString = process.env.CONNECTION_STRING
@@ -25,6 +26,9 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 
 // --- morgan ---
 app.use(morgan('tiny'))
+
+// --- jwt ---
+app.use(authJwt())
 
 // CONNECT DATABASE
 db.connect(connectionString)
