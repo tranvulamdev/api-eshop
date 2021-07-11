@@ -7,6 +7,7 @@ const morgan = require('morgan')
 const db = require('./config/db')
 const cors = require('cors')
 const authJwt = require('./helpers/jwt')
+const errorHandler = require('./helpers/error-handler')
 
 // ENV
 const connectionString = process.env.CONNECTION_STRING
@@ -29,6 +30,7 @@ app.use(morgan('tiny'))
 
 // --- jwt ---
 app.use(authJwt())
+app.use(errorHandler)
 
 // CONNECT DATABASE
 db.connect(connectionString)

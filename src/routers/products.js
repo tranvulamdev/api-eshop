@@ -94,6 +94,7 @@ router.get('/get/count', async (req, res) => {
     if (!productCount) return res.status(500).json({ success: false })
     res.send({ productCount })
 })
+
 // [GET] /products/get/featured
 router.get('/get/featured/:count', async (req, res) => {
     const count = req.params.count ? req.params.count : 0
