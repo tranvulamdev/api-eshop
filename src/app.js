@@ -36,6 +36,8 @@ app.use(errorHandler)
 db.connect(connectionString)
 
 // ROUTERS
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'))
+
 const productsRouter = require('./routers/products')
 const usersRouter = require('./routers/users')
 const ordersRouter = require('./routers/orders')
