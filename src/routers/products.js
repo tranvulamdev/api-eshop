@@ -3,34 +3,10 @@ const router = express.Router()
 const { Product } = require('../models/product')
 const { Category } = require('../models/category')
 const mongoose = require('mongoose')
-const multer = require('multer')
 
-// xem MIME types
-const FILE_TYPE_MAP = {
-    'image/png': 'png',
-    'image/jpeg': 'jpeg',
-    'image/jpg': 'jpg',
-}
+const uploadOptions = require('../middlewares/multer')
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const isValid = FILE_TYPE_MAP[file.mimetype]
-        let uploadError = new Error('Invalid image type')
-
-        if (isValid) {
-            uploadError = null
-        }
-        cb(uploadError, 'src/public/uploads')
-    },
-    filename: function (req, file, cb) {
-        const fileName = file.originalname.split(' ').join('-')
-        const extension = FILE_TYPE_MAP[file.mimetype]
-
-        cb(null, `${fileName}-${Date.now()}.${extension}`)
-    },
-})
-
-const uploadOptions = multer({ storage: storage })
+const cloudinaryParser = require('../middlewares/multer-cloudinary')
 
 // [GET] /products[?categories]
 router.get('/', async (req, res) => {
@@ -178,5 +154,34 @@ router.get('/get/featured/:count', async (req, res) => {
     if (!products) return res.status(500).json({ success: false })
     res.send(products)
 })
+
+// [PUT] /gallery-images/:id
+router.put(
+    '/cloudinary-images/:id',
+    cloudinaryParser.array('images', 10),
+    async (req, res) => {
+        if (!mongoose.isValidObjectId(req.params.id))
+            return res.status(400).send('Invalid Product ID')
+
+        const files = req.files
+        if (!files) return res.status(400).send('No images file in the request')
+
+        let imagesPaths = []
+        if (files)
+            files.map(file => {
+                imagesPaths.push(file.path)
+            })
+
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            { images: imagesPaths },
+            { new: true }
+        )
+
+        if (!product)
+            return res.status(500).send('the product cannot be updated!')
+        res.send(product)
+    }
+)
 
 module.exports = router
